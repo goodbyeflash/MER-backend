@@ -3,12 +3,14 @@ import Koa from 'koa';
 import Router from 'koa-router';
 import bodyParser from 'koa-bodyparser';
 import mongoose from 'mongoose';
+import https from 'https';
+import fs from 'fs';
 
 import api from './api';
 import jwtMiddleware from './lib/jwtMiddleware';
 
 // 비구조화 할당을 통해 process.env 내부 값에 대한 레퍼런스 만들기
-const { PORT, MONGO_URI } = process.env;
+const { PORT, MONGO_URI, SSL_PATH } = process.env;
 
 mongoose
   .connect(MONGO_URI)
@@ -39,8 +41,33 @@ app.use(jwtMiddleware);
 // app 인스턴스에 라우터 적용
 app.use(router.routes()).use(router.allowedMethods());
 
-// PORT가 지정되어 있지 않다면 34000을 사용
-const port = PORT || 34000;
-app.listen(port, () => {
-  console.log('📋 Listening to port %d', port);
-});
+// // PORT가 지정되어 있지 않다면 4000을 사용
+ const port = PORT || 4000;
+
+ if( SSL_PATH ) {
+  const option = {
+    key: fs.readFileSync(`${SSL_PATH}/goodbye-flash_com.key`),
+    cert: fs.readFileSync(`${SSL_PATH}/goodbye-flash_com__crt.pem`),
+    ca: fs.readFileSync(`${SSL_PATH}/goodbye-flash_com__ca.pem`),
+  };
+  // Https 적용
+  let serverCallback = app.callback();
+  try {
+    var httpsServer = https.createServer(option, serverCallback);
+    httpsServer.listen(port, (err) => {
+      if (err) {
+        console.error('HTTPS server FAIL: ', err, (err && err.stack));
+      }
+      else {
+        console.log(`HTTPS server OK!`);
+      }
+    });
+  } catch (ex) {
+    console.error('Failed to start HTTPS server\n', ex, (ex && ex.stack));
+  }
+   
+ } else {
+  app.listen(port, () => {
+    console.log('📋 Listening to port %d', port);
+  });
+ }
