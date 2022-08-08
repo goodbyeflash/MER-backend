@@ -28,9 +28,16 @@ const router = new Router();
 router.use('/api', api.routes()); // api 라우트 적용
 
 app.use(async (ctx, next) => {
-  ctx.set('Access-Control-Allow-Origin', '*');
-  ctx.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  ctx.set('Access-Control-Allow-Methods', 'POST, GET, DELETE, PATCH');
+  const corsWhitelist = [
+    'http://localhost:8080',
+    'http://www.publicdesign.co.kr',
+  ];
+  if (corsWhitelist.indexOf(ctx.request.headers.origin) !== -1) {
+    ctx.set('Access-Control-Allow-Origin', ctx.request.headers.origin);
+    ctx.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Set-Cookie');
+    ctx.set('Access-Control-Allow-Methods', 'POST, GET, DELETE, PATCH');
+    ctx.set('Access-Control-Allow-Credentials', true);
+  }
   await next();
 });
 
