@@ -1,6 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import moment from 'moment';
 
 const TeacherSchema = new Schema({
   id: String,
@@ -12,8 +13,8 @@ const TeacherSchema = new Schema({
   schoolCode: String,
   type: String,
   publishedDate: {
-    type: Date,
-    default: Date.now, // 현재 날짜를 기본값으로 지정
+    type: String,
+    default: moment().format(), // 현재 날짜를 기본값으로 지정
   },
 });
 

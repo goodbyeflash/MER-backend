@@ -44,9 +44,9 @@ export const register = async (ctx) => {
     password: Joi.string().required(),
     name: Joi.string().required(),
     hp: Joi.string().required(),
-    email: Joi.string(),
+    email: Joi.string().allow(''),
     schoolName: Joi.string().required(),
-    schoolCode: Joi.string(),
+    schoolCode: Joi.string().allow(''),
     type: Joi.string().required(),
   });
   const result = schema.validate(ctx.request.body);

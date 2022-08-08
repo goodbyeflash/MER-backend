@@ -1,4 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
+import moment from 'moment';
 
 const userSchema = new Schema({
   name: String,
@@ -10,8 +11,8 @@ const userSchema = new Schema({
   type: String,
   grade: String,
   publishedDate: {
-    type: Date,
-    default: Date.now, // 현재 날짜를 기본값으로 지정
+    type: String,
+    default: moment().format(), // 현재 날짜를 기본값으로 지정
   },
   user: {
     _id: mongoose.Types.ObjectId,

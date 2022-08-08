@@ -78,8 +78,8 @@ export const write = async (ctx) => {
     sex: Joi.string().required(),
     age: Joi.string().required(),
     address: Joi.string().required(),
-    schoolName: Joi.string(),
-    schoolCode: Joi.string(),
+    schoolName: Joi.string().allow(''),
+    schoolCode: Joi.string().allow(''),
     type: Joi.string().required(),
     grade: Joi.string().required(),
   });
