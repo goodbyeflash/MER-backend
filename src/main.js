@@ -34,9 +34,10 @@ app.use(async (ctx, next) => {
   ];
   if (corsWhitelist.indexOf(ctx.request.headers.origin) !== -1) {
     ctx.set('Access-Control-Allow-Origin', ctx.request.headers.origin);
-    ctx.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Set-Cookie');
+    ctx.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Set-Cookie, Last-Page');
     ctx.set('Access-Control-Allow-Methods', 'POST, GET, DELETE, PATCH');
     ctx.set('Access-Control-Allow-Credentials', true);
+    ctx.set('Access-Control-Expose-Headers', "Last-Page");
   }
   await next();
 });
