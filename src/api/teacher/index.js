@@ -12,6 +12,7 @@ teachers.post('/logout', teacherCtrl.logout);
 
 // Control
 teachers.get('/', teacherCtrl.list);
+teachers.post('/find', teacherCtrl.find);
 teachers.get('/:id', teacherCtrl.getTeacherById, teacherCtrl.read);
 teachers.patch('/:id', checkLoggedIn, teacherCtrl.update);
 teachers.delete('/:id', checkLoggedIn, teacherCtrl.remove);

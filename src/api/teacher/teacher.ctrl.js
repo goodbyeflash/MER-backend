@@ -184,6 +184,41 @@ export const list = async (ctx) => {
 };
 
 /*
+  POST /api/teacher/find?page=
+  {
+    "name" : "관리"
+  }
+*/
+export const find = async (ctx) => {
+  const body = ctx.request.body || {};
+  if( Object.keys(body).length > 0 ) {
+    const key = Object.keys(body)[0];
+    body[key] = { $regex: '.*' + body[key] + '.*' };
+  }
+  const page = parseInt(ctx.query.page || '1', 10);
+
+  if (page < 1) {
+    ctx.status = 400;
+    return;
+  }
+
+  try {
+    const teachers = await Teacher.find(body)
+      .sort({ _id: -1 })
+      .limit(10)
+      .skip((page - 1) * 10)
+      .exec();
+    const teacherCount = await Teacher.countDocuments(body).exec();
+    ctx.set('Last-Page', Math.ceil(teacherCount / 10));
+    ctx.body = teachers
+      .map((teacher) => teacher.toJSON())
+      .map((teacher) => new Teacher(teacher).serialize());
+  } catch (error) {
+    ctx.throw(500, error);
+  }
+};
+
+/*
   GET /api/teacher/:id
 */
 export const read = async (ctx) => {
