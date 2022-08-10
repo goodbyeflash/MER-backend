@@ -12,7 +12,7 @@ const userSchema = new Schema({
   grade: String,
   publishedDate: {
     type: String,
-    default: moment().format(), // 현재 날짜를 기본값으로 지정
+    default: moment().format(),
   },
   user: {
     _id: mongoose.Types.ObjectId,

@@ -6,13 +6,14 @@ const { ObjectId } = mongoose.Types;
 
 export const getUserById = async (ctx, next) => {
   const { id } = ctx.params;
+  console.log(id);
   if (!ObjectId.isValid(id)) {
     ctx.status = 400; // Bad Request
     return;
   }
   try {
     const user = await User.findById(id);
-    // 선생이 존재하지 않을 때
+    // 유저가 존재하지 않을 때
     if (!user) {
       ctx.status = 404; // Not Found
       return;
