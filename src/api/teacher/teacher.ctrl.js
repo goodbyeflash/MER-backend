@@ -222,7 +222,7 @@ export const find = async (ctx) => {
   GET /api/teacher/:id
 */
 export const read = async (ctx) => {
-  ctx.body = ctx.state.teacher;
+  ctx.body = ctx.state.teacher.serialize();
 };
 
 /*

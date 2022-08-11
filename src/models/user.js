@@ -11,7 +11,7 @@ const userSchema = new Schema({
   type: String,
   grade: String,
   publishedDate: {
-    type: String,
+    type: Date,
     default: moment().format(),
   },
   user: {

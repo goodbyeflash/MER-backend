@@ -5,7 +5,8 @@ const contents = new Router();
 
 contents.post('/check', contentCtrl.getUserById, contentCtrl.check);
 contents.post('/register', contentCtrl.getUserById, contentCtrl.write);
+contents.post('/read', contentCtrl.getUserById, contentCtrl.read);
+contents.post('/find', contentCtrl.find);
 contents.patch('/:id', contentCtrl.getUserById, contentCtrl.update);
-
 
 export default contents;

@@ -4,10 +4,14 @@ import moment from 'moment';
 const contentSchema = new Schema({
   contentId: String,
   userId: String,
+  sex: String,
+  age: String,
+  address: String,
+  type: String,
   data : Object,
   publishedDate: {
-    type: String,
-    default: moment().format(),
+    type: Date,
+    default: moment().format('YYYY-MM-DD HH:mm:ss'),
   },
 });
 

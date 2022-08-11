@@ -2,6 +2,7 @@ import User from '../../models/user';
 import Content from '../../models/content';
 import mongoose from 'mongoose';
 import Joi from '@hapi/joi';
+import moment from 'moment';
 
 const { ObjectId } = mongoose.Types;
 
@@ -26,16 +27,29 @@ export const getUserById = async (ctx, next) => {
 };
 
 /*
+  Post /api/content
+*/
+export const list = async (ctx) => {
+  try {
+    const contents = await Content.find({}).exec();
+    ctx.body = contents.map((content) => content.toJSON());
+  } catch (error) {
+    ctx.throw(500, error);
+  }
+};
+
+
+/*
   POST /api/content/check
   {
     "contentId" : "MER_01_01",
-    "userId" : "objectId",
+    "userId" : "62f25a12dec82fee9bd441c5",
   }
  */
   export const check = async (ctx) => {
     const { contentId, userId } = ctx.request.body;
 
-    // id, password가 없으면 에러 처리
+    // contentId, userId 없으면 에러 처리
     if (!contentId || !userId) {
       ctx.status = 401; // Unteacherorized
       return;
@@ -54,13 +68,44 @@ export const getUserById = async (ctx, next) => {
     }
   };
 
+  /*
+  POST /api/content/read
+  {
+    "userId" : "62f25a12dec82fee9bd441c5",
+  }
+ */
+  export const read = async (ctx) => {
+    const { userId } = ctx.request.body;
+
+    // userId가 없으면 에러 처리
+    if (!userId) {
+      ctx.status = 401; // Unteacherorized
+      return;
+    }
   
+    try {
+      const content = await Content.find().where('userId').equals(userId);
+      // 콘텐츠가 존재하지 않으면 에러 처리
+      if (!content) {
+        ctx.status = 401;
+        return;
+      }
+      ctx.body = content;
+    } catch (e) {
+      ctx.throw(500, e);
+    }
+  };
+
 /*
   POST /api/content/
   {
-    "contentId" : "MER_01_01",
-    "userId" : "objectId",
-    "data" : { C1 : 2, C2 : 3 }
+    "contentId" : "MER_01_02",
+    "userId" : "62f25a12dec82fee9bd441c5",
+    "sex" : "남",
+    "age" : "만 7세",
+    "address" : "서울 강동",
+    "type" : "초등학교",
+    "data" : { "C1" : 2, "C2" : 3 }
   }
  */
 export const write = async (ctx) => {
@@ -68,6 +113,10 @@ export const write = async (ctx) => {
     // 객체가 다음 필드를 가지고 있음을 검증
     contentId: Joi.string().required(), // required()가 있으면 필수 항목
     userId: Joi.string().required(),
+    sex: Joi.string().required(),
+    age: Joi.string().required(),
+    address: Joi.string().required(),
+    type: Joi.string().required(),
     data: Joi.object().required(),
   });
 
@@ -78,11 +127,15 @@ export const write = async (ctx) => {
     ctx.body = result.error;
     return;
   }
-  const { contentId, userId, data } =
+  const { contentId, userId, sex, age, address, type ,data } =
     ctx.request.body;
   const content = new Content({
     contentId,
     userId,
+    sex,
+    age,
+    address,
+    type,
     data,
   });
 
@@ -97,7 +150,7 @@ export const write = async (ctx) => {
 /*
   PATCH /api/content/:id
   { 
-    "userId" : {},
+    "userId" : "62f25a12dec82fee9bd441c5",
     "data" : { C1 : 1, C2 : 0 },
   }
 */
@@ -131,6 +184,44 @@ export const update = async (ctx) => {
       return;
     }
     ctx.body = updateContent;
+  } catch (error) {
+    ctx.throw(500, error);
+  }
+};
+
+/*
+  POST /api/content/find
+  {
+    "dateGte" : "2022-08-11",
+    "dateLt" : "2022-08-11",
+    "filter" : {
+      "contentId" : "MER_01_01",
+    },
+  }
+*/
+export const find = async (ctx) => {
+
+  const body = ctx.request.body || {};
+  
+  const findData = {};  
+
+  if( body.dateGte && body.dateLt ) {
+    findData['publishedDate'] = 
+    {
+       $gte: moment(body.dateGte).startOf("day").format(),
+       $lt: moment(body.dateLt).endOf("day").format()
+   }
+  }
+
+  try {
+    let content;
+    if( body.filter ) {
+      const key = Object.keys(body.filter)[0];
+      content = await Content.find(findData).where(key).equals(body.filter[key]).exec();
+    } else {
+      content = await Content.find(findData).exec();
+    }
+    ctx.body = content;      
   } catch (error) {
     ctx.throw(500, error);
   }

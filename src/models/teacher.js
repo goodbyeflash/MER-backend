@@ -13,7 +13,7 @@ const TeacherSchema = new Schema({
   schoolCode: String,
   type: String,
   publishedDate: {
-    type: String,
+    type: Date,
     default: moment().format(),
   },
 });
