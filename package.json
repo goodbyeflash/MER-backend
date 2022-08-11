@@ -9,6 +9,7 @@
     "dotenv": "^16.0.1",
     "eslint-config-prettier": "^8.5.0",
     "esm": "^3.2.25",
+    "exceljs": "^4.3.0",
     "jsonwebtoken": "^8.5.1",
     "koa": "^2.13.4",
     "koa-bodyparser": "^4.3.0",
@@ -16,13 +17,12 @@
     "koa-static": "^5.0.0",
     "moment": "^2.29.4",
     "mongoose": "^6.5.0",
+    "request-ip": "^3.3.0",
     "sanitize-html": "^2.7.1"
   },
   "devDependencies": {
     "eslint": "^8.20.0",
-    "exceljs": "^4.3.0",
-    "nodemon": "^2.0.19",
-    "request-ip": "^3.3.0"
+    "nodemon": "^2.0.19"
   },
   "scripts": {
     "start": "node -r esm src",
