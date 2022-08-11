@@ -1,6 +1,7 @@
 import User from '../../models/user';
 import mongoose from 'mongoose';
 import Joi from '@hapi/joi';
+import requsetIp from 'request-ip';
 
 const { ObjectId } = mongoose.Types;
 
@@ -69,7 +70,8 @@ export const read = async (ctx) => {
     "schoolName" : "면목",
     "schoolCode" : "S000000",
     "type" : "초등학교",
-    "grade" : "1학년"
+    "grade" : "1학년",
+    "ip" : "0.0.0.0"
   }
  */
 export const write = async (ctx) => {
@@ -94,6 +96,9 @@ export const write = async (ctx) => {
   }
   const { name, sex, age, address, schoolName, schoolCode, type, grade } =
     ctx.request.body;
+  
+  const ip = requsetIp.getClientIp(ctx.request);  
+
   const user = new User({
     name,
     sex,
@@ -103,6 +108,7 @@ export const write = async (ctx) => {
     schoolCode,
     type,
     grade,
+    ip,
   });
 
   try {

@@ -10,6 +10,7 @@ const userSchema = new Schema({
   schoolCode: String,
   type: String,
   grade: String,
+  ip : String,
   publishedDate: {
     type: Date,
     default: moment().format(),
