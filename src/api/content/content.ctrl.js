@@ -57,9 +57,9 @@ export const list = async (ctx) => {
   
     try {
       const content = await Content.find().where('contentId').equals(contentId).where('userId').equals(userId);
-      // 콘텐츠가 존재하지 않으면 에러 처리
-      if (!content) {
-        ctx.status = 401;
+      // 콘텐츠가 존재하지 않으면 Not Found 처리
+      if (!content || content.length === 0) {
+        ctx.status = 404;
         return;
       }
       ctx.body = content;
