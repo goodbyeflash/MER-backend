@@ -1,44 +1,49 @@
-import excel from "exceljs";
+import excel from 'exceljs';
 
 export const download = async (ctx) => {
+  const { columns, rows } = ctx.request.body;
 
-    const objs = [{
-        id : "테스트",
-        title : "타이틀입니다",
-        description : "설명",
-        published : "날짜"
-    }];
+  let rowArray = [];
+  rows.forEach((row) => {
+    row.publishedDate = new Date(row.publishedDate).YYYYMMDDHHMMSS();
+    rowArray.push(row);
+  });
 
-    let tutorials = [];
-    objs.forEach((obj) => {
-      tutorials.push({
-        id: obj.id,
-        title: obj.title,
-        description: obj.description,
-        published: obj.published,
-      });
+  let workbook = new excel.Workbook();
+  let worksheet = workbook.addWorksheet('Sheet1');
+  worksheet.columns = columns;
+  // Add Array Rows
+  worksheet.addRows(rowArray);
+  // res is a Stream object
+  try {
+    ctx.set(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
+    ctx.status = 200;
+    await workbook.xlsx.write(ctx.res).then(() => {
+      ctx.res.end();
     });
+  } catch (error) {
+    ctx.throw(500, error);
+  }
+};
 
-    let workbook = new excel.Workbook();
-    let worksheet = workbook.addWorksheet("Tutorials");
-    worksheet.columns = [
-      { header: "Id", key: "id", width: 5 },
-      { header: "Title", key: "title", width: 25 },
-      { header: "Description", key: "description", width: 25 },
-      { header: "Published", key: "published", width: 10 },
-    ];
-    // Add Array Rows
-    worksheet.addRows(tutorials);
-    // res is a Stream object   
-    try {
-        ctx.set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        ctx.status = 200;
-        await workbook.xlsx.write(ctx.res).then(()=>{
-            ctx.res.end();
-        });
-      } catch (error) {
-        ctx.throw(500, error);
-      }
-
+function pad(number, length) {
+  let str = '' + number;
+  while (str.length < length) {
+    str = '0' + str;
+  }
+  return str;
 }
 
+Date.prototype.YYYYMMDDHHMMSS = function () {
+  let yyyy = this.getFullYear().toString();
+  let MM = pad(this.getMonth() + 1, 2);
+  let dd = pad(this.getDate(), 2);
+  let hh = pad(this.getHours(), 2);
+  let mm = pad(this.getMinutes(), 2);
+  let ss = pad(this.getSeconds(), 2);
+
+  return `${yyyy}-${MM}-${dd} ${hh}:${mm}:${ss}`;
+};
