@@ -4,13 +4,13 @@ import moment from 'moment';
 const userSchema = new Schema({
   name: String,
   sex: String,
-  age: String,
+  age: Number,
   address: String,
   schoolName: String,
   schoolCode: String,
   type: String,
   grade: String,
-  ip : String,
+  ip: String,
   publishedDate: {
     type: Date,
     default: moment().format(),

@@ -6,7 +6,7 @@ import moment from 'moment';
 
 const { ObjectId } = mongoose.Types;
 
-export const getUserById = async (ctx, next) => {  
+export const getUserById = async (ctx, next) => {
   const { userId } = ctx.request.body;
   if (!ObjectId.isValid(userId)) {
     ctx.status = 400; // Bad Request
@@ -27,74 +27,65 @@ export const getUserById = async (ctx, next) => {
 };
 
 /*
-  Post /api/content
-*/
-export const list = async (ctx) => {
-  try {
-    const contents = await Content.find({}).exec();
-    ctx.body = contents.map((content) => content.toJSON());
-  } catch (error) {
-    ctx.throw(500, error);
-  }
-};
-
-
-/*
   POST /api/content/check
   {
     "contentId" : "MER_01_01",
     "userId" : "62f25a12dec82fee9bd441c5",
   }
  */
-  export const check = async (ctx) => {
-    const { contentId, userId } = ctx.request.body;
+export const check = async (ctx) => {
+  const { contentId, userId } = ctx.request.body;
 
-    // contentId, userId 없으면 에러 처리
-    if (!contentId || !userId) {
-      ctx.status = 401; // Unteacherorized
+  // contentId, userId 없으면 에러 처리
+  if (!contentId || !userId) {
+    ctx.status = 401; // Unteacherorized
+    return;
+  }
+
+  try {
+    const content = await Content.find()
+      .where('contentId')
+      .equals(contentId)
+      .where('userId')
+      .equals(userId);
+    // 콘텐츠가 존재하지 않으면 Not Found 처리
+    if (!content || content.length === 0) {
+      ctx.status = 404;
       return;
     }
-  
-    try {
-      const content = await Content.find().where('contentId').equals(contentId).where('userId').equals(userId);
-      // 콘텐츠가 존재하지 않으면 Not Found 처리
-      if (!content || content.length === 0) {
-        ctx.status = 404;
-        return;
-      }
-      ctx.body = content;
-    } catch (e) {
-      ctx.throw(500, e);
-    }
-  };
+    ctx.body = content;
+  } catch (e) {
+    ctx.throw(500, e);
+  }
+};
 
-  /*
+/*
   POST /api/content/read
   {
     "userId" : "62f25a12dec82fee9bd441c5",
   }
  */
-  export const read = async (ctx) => {
-    const { userId } = ctx.request.body;
+export const read = async (ctx) => {
+  const { userId } = ctx.request.body;
 
-    // userId가 없으면 에러 처리
-    if (!userId) {
-      ctx.status = 401; // Unteacherorized
+  // userId가 없으면 에러 처리
+  if (!userId) {
+    ctx.status = 401; // Unteacherorized
+    return;
+  }
+
+  try {
+    const content = await Content.find().where('userId').equals(userId);
+    // 콘텐츠가 존재하지 않으면 에러 처리
+    if (!content) {
+      ctx.status = 401;
       return;
     }
-  
-    try {
-      const content = await Content.find().where('userId').equals(userId);
-      // 콘텐츠가 존재하지 않으면 에러 처리
-      if (!content) {
-        ctx.status = 401;
-        return;
-      }
-      ctx.body = content;
-    } catch (e) {
-      ctx.throw(500, e);
-    }
-  };
+    ctx.body = content;
+  } catch (e) {
+    ctx.throw(500, e);
+  }
+};
 
 /*
   POST /api/content/
@@ -127,8 +118,7 @@ export const write = async (ctx) => {
     ctx.body = result.error;
     return;
   }
-  const { contentId, userId, sex, age, address, type ,data } =
-    ctx.request.body;
+  const { contentId, userId, sex, age, address, type, data } = ctx.request.body;
   const content = new Content({
     contentId,
     userId,
@@ -159,7 +149,7 @@ export const update = async (ctx) => {
 
   // write에서 사용한 schema와 비슷한데, required()가 없습니다.
   const schema = Joi.object().keys({
-    userId : Joi.string().required(),
+    userId: Joi.string().required(),
     data: Joi.object().required(),
   });
 
@@ -172,7 +162,6 @@ export const update = async (ctx) => {
   }
 
   try {
-
     const nextData = { ...ctx.request.body };
 
     const updateContent = await Content.findByIdAndUpdate(id, nextData, {
@@ -200,28 +189,29 @@ export const update = async (ctx) => {
   }
 */
 export const find = async (ctx) => {
-
   const body = ctx.request.body || {};
-  
-  const findData = {};  
 
-  if( body.dateGte && body.dateLt ) {
-    findData['publishedDate'] = 
-    {
-       $gte: moment(body.dateGte).startOf("day").format(),
-       $lt: moment(body.dateLt).endOf("day").format()
-   }
+  const findData = {};
+
+  if (body.dateGte && body.dateLt) {
+    findData['publishedDate'] = {
+      $gte: moment(body.dateGte).startOf('day').format(),
+      $lt: moment(body.dateLt).endOf('day').format(),
+    };
   }
 
   try {
     let content;
-    if( body.filter ) {
+    if (body.filter) {
       const key = Object.keys(body.filter)[0];
-      content = await Content.find(findData).where(key).equals(body.filter[key]).exec();
+      content = await Content.find(findData)
+        .where(key)
+        .equals(body.filter[key])
+        .exec();
     } else {
       content = await Content.find(findData).exec();
     }
-    ctx.body = content;      
+    ctx.body = content;
   } catch (error) {
     ctx.throw(500, error);
   }

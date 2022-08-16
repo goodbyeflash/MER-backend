@@ -1,3 +1,4 @@
+import Content from '../../models/content';
 import excel from 'exceljs';
 
 export const download = async (ctx) => {
@@ -29,12 +30,42 @@ export const download = async (ctx) => {
   }
 };
 
+export const sortContent = async (ctx) => {
+  const { sortKey } = ctx.request.body;
+
+  // key가 없으면 에러 처리
+  if (!sortKey) {
+    ctx.status = 401; // Unteacherorized
+    return;
+  }
+
+  try {
+    let contents = await Content.find({}).exec();
+    contents = contents.map((content) => content.toJSON());
+    contents.sort(arrOrder(sortKey));
+  } catch (error) {
+    ctx.throw(500, error);
+  }
+};
+
 function pad(number, length) {
   let str = '' + number;
   while (str.length < length) {
     str = '0' + str;
   }
   return str;
+}
+
+function arrOrder(key) {
+  return function (a, b) {
+    if (a[key] > b[key]) {
+      return 1;
+    } else if (a[key] < b[key]) {
+      return -1;
+    }
+
+    return 0;
+  };
 }
 
 Date.prototype.YYYYMMDDHHMMSS = function () {

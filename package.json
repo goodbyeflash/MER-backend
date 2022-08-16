@@ -15,6 +15,7 @@
     "koa-bodyparser": "^4.3.0",
     "koa-router": "^12.0.0",
     "koa-static": "^5.0.0",
+    "korean-name-generator": "^1.0.4",
     "moment": "^2.29.4",
     "mongoose": "^6.5.0",
     "request-ip": "^3.3.0",

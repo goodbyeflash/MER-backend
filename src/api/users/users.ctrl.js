@@ -7,7 +7,6 @@ const { ObjectId } = mongoose.Types;
 
 export const getUserById = async (ctx, next) => {
   const { id } = ctx.params;
-  console.log(id);
   if (!ObjectId.isValid(id)) {
     ctx.status = 400; // Bad Request
     return;
@@ -65,13 +64,12 @@ export const read = async (ctx) => {
   {
     "name" : "홍길동",
     "sex" : "남",
-    "age" : "12세",
+    "age" : 12,
     "address" : "서울시",
     "schoolName" : "면목",
     "schoolCode" : "S000000",
     "type" : "초등학교",
-    "grade" : "1학년",
-    "ip" : "0.0.0.0"
+    "grade" : "1학년"    
   }
  */
 export const write = async (ctx) => {
@@ -79,7 +77,7 @@ export const write = async (ctx) => {
     // 객체가 다음 필드를 가지고 있음을 검증
     name: Joi.string().required(), // required()가 있으면 필수 항목
     sex: Joi.string().required(),
-    age: Joi.string().required(),
+    age: Joi.number().required(),
     address: Joi.string().required(),
     schoolName: Joi.string().allow(''),
     schoolCode: Joi.string().allow(''),
@@ -96,8 +94,8 @@ export const write = async (ctx) => {
   }
   const { name, sex, age, address, schoolName, schoolCode, type, grade } =
     ctx.request.body;
-  
-  const ip = requsetIp.getClientIp(ctx.request);  
+
+  const ip = requsetIp.getClientIp(ctx.request);
 
   const user = new User({
     name,
@@ -112,8 +110,42 @@ export const write = async (ctx) => {
   });
 
   try {
-    await user.save();
+    await user.save();    
     ctx.body = user;
+  } catch (error) {
+    ctx.throw(500, error);
+  }
+};
+
+/*
+  POST /api/users/find?page=
+  {
+    "name" : "김"
+  }
+*/
+export const find = async (ctx) => {
+  const body = ctx.request.body || {};
+  if( Object.keys(body).length > 0 ) {
+    const key = Object.keys(body)[0];
+    body[key] = { $regex: '.*' + body[key] + '.*' };
+  }
+  const page = parseInt(ctx.query.page || '1', 10);
+
+  if (page < 1) {
+    ctx.status = 400;
+    return;
+  }
+
+  try {
+    const users = await User.find(body)
+      .sort({ _id: -1 })
+      .limit(10)
+      .skip((page - 1) * 10)
+      .exec();
+    const userCount = await User.countDocuments(body).exec();
+    ctx.set('Last-Page', Math.ceil(userCount / 10));
+    ctx.body = users
+      .map((user) => user.toJSON())      
   } catch (error) {
     ctx.throw(500, error);
   }
