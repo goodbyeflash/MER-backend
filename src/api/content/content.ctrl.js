@@ -27,6 +27,18 @@ export const getUserById = async (ctx, next) => {
 };
 
 /*
+  GET /api/content/count  
+ */
+export const count = async (ctx) => {
+  try {
+    const content = await Content.count({});
+    ctx.body = content;
+  } catch (e) {
+    ctx.throw(500, e);
+  }
+};
+
+/*
   POST /api/content/check
   {
     "contentId" : "MER_01_01",

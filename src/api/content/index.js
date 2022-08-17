@@ -3,6 +3,7 @@ import * as contentCtrl from './content.ctrl';
 
 const contents = new Router();
 
+contents.get('/count', contentCtrl.count);
 contents.post('/check', contentCtrl.getUserById, contentCtrl.check);
 contents.post('/register', contentCtrl.getUserById, contentCtrl.write);
 contents.post('/read', contentCtrl.getUserById, contentCtrl.read);
