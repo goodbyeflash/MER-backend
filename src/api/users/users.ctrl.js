@@ -142,7 +142,7 @@ export const find = async (ctx) => {
       .limit(10)
       .skip((page - 1) * 10)
       .exec();
-    const userCount = await User.countDocuments(body).exec();
+    const userCount = await User.countDocuments(body).exec();    
     ctx.set('Last-Page', Math.ceil(userCount / 10));
     ctx.body = users
       .map((user) => user.toJSON())      

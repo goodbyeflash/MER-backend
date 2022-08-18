@@ -25,6 +25,18 @@ export const getTeacherById = async (ctx, next) => {
 };
 
 /*
+  GET /api/teacher/count  
+ */
+  export const count = async (ctx) => {
+    try {
+      const teacher = await Teacher.count({});
+      ctx.body = teacher;
+    } catch (e) {
+      ctx.throw(500, e);
+    }
+  };
+
+/*
   POST /api/teacher/register
   {
       "id" : "kim",
