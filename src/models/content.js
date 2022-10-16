@@ -5,10 +5,10 @@ const contentSchema = new Schema({
   contentId: String,
   userId: String,
   sex: String,
-  age: String,
+  age: Number,
   address: String,
   type: String,
-  data : Object,
+  data: Object,
   publishedDate: {
     type: Date,
     default: moment().format('YYYY-MM-DD HH:mm:ss'),

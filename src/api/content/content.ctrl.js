@@ -105,7 +105,7 @@ export const read = async (ctx) => {
     "contentId" : "MER_01_02",
     "userId" : "62f25a12dec82fee9bd441c5",
     "sex" : "남",
-    "age" : "만 7세",
+    "age" : 11,
     "address" : "서울 강동",
     "type" : "초등학교",
     "data" : { "C1" : 2, "C2" : 3 }
@@ -117,7 +117,7 @@ export const write = async (ctx) => {
     contentId: Joi.string().required(), // required()가 있으면 필수 항목
     userId: Joi.string().required(),
     sex: Joi.string().required(),
-    age: Joi.string().required(),
+    age: Joi.number().required(),
     address: Joi.string().required(),
     type: Joi.string().required(),
     data: Joi.object().required(),
