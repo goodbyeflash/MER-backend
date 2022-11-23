@@ -27,14 +27,14 @@ export const getTeacherById = async (ctx, next) => {
 /*
   GET /api/teacher/count  
  */
-  export const count = async (ctx) => {
-    try {
-      const teacher = await Teacher.count({});
-      ctx.body = teacher;
-    } catch (e) {
-      ctx.throw(500, e);
-    }
-  };
+export const count = async (ctx) => {
+  try {
+    const teacher = await Teacher.count({});
+    ctx.body = teacher;
+  } catch (e) {
+    ctx.throw(500, e);
+  }
+};
 
 /*
   POST /api/teacher/register
@@ -60,6 +60,7 @@ export const register = async (ctx) => {
     schoolName: Joi.string().required(),
     schoolCode: Joi.string().allow(''),
     type: Joi.string().required(),
+    publishedDate: Joi.date().required(),
   });
   const result = schema.validate(ctx.request.body);
   if (result.error) {
@@ -68,8 +69,17 @@ export const register = async (ctx) => {
     return;
   }
 
-  const { id, password, name, hp, email, schoolName, schoolCode, type } =
-    ctx.request.body;
+  const {
+    id,
+    password,
+    name,
+    hp,
+    email,
+    schoolName,
+    schoolCode,
+    type,
+    publishedDate,
+  } = ctx.request.body;
   try {
     // id이 이미 존재하는지 확인
     const exists = await Teacher.findByid(id);
@@ -87,6 +97,7 @@ export const register = async (ctx) => {
       schoolName,
       schoolCode,
       type,
+      publishedDate,
     });
     await teacher.setPassword(password); // 비밀번호 설정
     await teacher.save(); // 데이터베이스에 저장
@@ -98,7 +109,7 @@ export const register = async (ctx) => {
     const token = teacher.generateToken();
     ctx.cookies.set('access_token', token, {
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7일
-      httpOnly: true,      
+      httpOnly: true,
     });
   } catch (e) {
     ctx.throw(500, e);
@@ -203,7 +214,7 @@ export const list = async (ctx) => {
 */
 export const find = async (ctx) => {
   const body = ctx.request.body || {};
-  if( Object.keys(body).length > 0 ) {
+  if (Object.keys(body).length > 0) {
     const key = Object.keys(body)[0];
     body[key] = { $regex: '.*' + body[key] + '.*' };
   }

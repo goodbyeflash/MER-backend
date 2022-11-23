@@ -12,10 +12,7 @@ const TeacherSchema = new Schema({
   schoolName: String,
   schoolCode: String,
   type: String,
-  publishedDate: {
-    type: Date,
-    default: moment().format(),
-  },
+  publishedDate: Date,
 });
 
 TeacherSchema.methods.setPassword = async function (password) {

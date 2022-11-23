@@ -11,10 +11,7 @@ const userSchema = new Schema({
   type: String,
   grade: String,
   ip: String,
-  publishedDate: {
-    type: Date,
-    default: moment().format(),
-  },
+  publishedDate: Date,
   user: {
     _id: mongoose.Types.ObjectId,
   },

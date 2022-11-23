@@ -121,6 +121,7 @@ export const write = async (ctx) => {
     address: Joi.string().required(),
     type: Joi.string().required(),
     data: Joi.object().required(),
+    publishedDate: Joi.date().required(),
   });
 
   // 검증하고 나서 검증 실패인 경우 에러 처리
@@ -130,7 +131,8 @@ export const write = async (ctx) => {
     ctx.body = result.error;
     return;
   }
-  const { contentId, userId, sex, age, address, type, data } = ctx.request.body;
+  const { contentId, userId, sex, age, address, type, data, publishedDate } =
+    ctx.request.body;
   const content = new Content({
     contentId,
     userId,
@@ -139,6 +141,7 @@ export const write = async (ctx) => {
     address,
     type,
     data,
+    publishedDate,
   });
 
   try {

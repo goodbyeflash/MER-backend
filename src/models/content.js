@@ -9,10 +9,7 @@ const contentSchema = new Schema({
   address: String,
   type: String,
   data: Object,
-  publishedDate: {
-    type: Date,
-    default: moment().format('YYYY-MM-DD HH:mm:ss'),
-  },
+  publishedDate: Date,
 });
 
 const Content = mongoose.model('Content', contentSchema);

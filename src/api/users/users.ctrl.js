@@ -83,6 +83,7 @@ export const write = async (ctx) => {
     schoolCode: Joi.string().allow(''),
     type: Joi.string().required(),
     grade: Joi.string().required(),
+    publishedDate: Joi.date().required(),
   });
 
   // 검증하고 나서 검증 실패인 경우 에러 처리
@@ -92,10 +93,23 @@ export const write = async (ctx) => {
     ctx.body = result.error;
     return;
   }
-  const { name, sex, age, address, schoolName, schoolCode, type, grade } =
-    ctx.request.body;
+  const {
+    name,
+    sex,
+    age,
+    address,
+    schoolName,
+    schoolCode,
+    type,
+    grade,
+    publishedDate,
+  } = ctx.request.body;
 
-  const ip = requsetIp.getClientIp(ctx.request);
+  let ip = requsetIp.getClientIp(ctx.request);
+
+  if (ip.indexOf('::ffff:') > -1) {
+    ip = ip.replace('::ffff:', '');
+  }
 
   const user = new User({
     name,
@@ -107,10 +121,11 @@ export const write = async (ctx) => {
     type,
     grade,
     ip,
+    publishedDate,
   });
 
   try {
-    await user.save();    
+    await user.save();
     ctx.body = user;
   } catch (error) {
     ctx.throw(500, error);
@@ -125,7 +140,7 @@ export const write = async (ctx) => {
 */
 export const find = async (ctx) => {
   const body = ctx.request.body || {};
-  if( Object.keys(body).length > 0 ) {
+  if (Object.keys(body).length > 0) {
     const key = Object.keys(body)[0];
     body[key] = { $regex: '.*' + body[key] + '.*' };
   }
@@ -142,10 +157,9 @@ export const find = async (ctx) => {
       .limit(10)
       .skip((page - 1) * 10)
       .exec();
-    const userCount = await User.countDocuments(body).exec();    
+    const userCount = await User.countDocuments(body).exec();
     ctx.set('Last-Page', Math.ceil(userCount / 10));
-    ctx.body = users
-      .map((user) => user.toJSON())      
+    ctx.body = users.map((user) => user.toJSON());
   } catch (error) {
     ctx.throw(500, error);
   }
