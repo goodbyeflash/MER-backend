@@ -125,9 +125,9 @@ export const register = async (ctx) => {
 */
 export const login = async (ctx) => {
   const { id, password } = ctx.request.body;
-
   // id, password가 없으면 에러 처리
   if (!id || !password) {
+    
     ctx.status = 401; // Unteacherorized
     return;
   }

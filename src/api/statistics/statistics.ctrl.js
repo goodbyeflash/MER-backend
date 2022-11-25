@@ -6,20 +6,29 @@ import moment from 'moment';
   {
     "dateGte" : "2022-08-11",
     "dateLt" : "2022-08-14",
+    "userIds" : []
   }
 */
 export const totalUserCount = async (ctx) => {
   const body = ctx.request.body || {};
 
+  const matchQuery = {
+    publishedDate: {
+      $gte: new Date(moment(body.dateGte).startOf('day').format()),
+      $lt: new Date(moment(body.dateLt).endOf('day').format()),
+    },
+  };
+
+  if (body.userIds) {
+    matchQuery['userId'] = {
+      $in: body.userIds,
+    };
+  }
+
   try {
     const aggregate = await Content.aggregate([
       {
-        $match: {
-          publishedDate: {
-            $gte: new Date(moment(body.dateGte).startOf('day').format()),
-            $lt: new Date(moment(body.dateLt).endOf('day').format()),
-          },
-        },
+        $match: matchQuery,
       },
       {
         $group: {
@@ -42,26 +51,33 @@ export const totalUserCount = async (ctx) => {
 /*
   POST /api/statistics/env
   {
+    "contentId" : "MER_01_01",
     "dateGte" : "2022-08-11",
     "dateLt" : "2022-08-14",
-    "filter" : {
-      "contentId" : "MER_01_01",
-    },
+    "userIds" : []
   }
 */
 export const env = async (ctx) => {
   const body = ctx.request.body || {};
 
+  const matchQuery = {
+    contentId: body.contentId,
+    publishedDate: {
+      $gte: new Date(moment(body.dateGte).startOf('day').format()),
+      $lt: new Date(moment(body.dateLt).endOf('day').format()),
+    },
+  };
+
+  if (body.userIds) {
+    matchQuery['userId'] = {
+      $in: body.userIds,
+    };
+  }
+
   try {
     const aggregate = await Content.aggregate([
       {
-        $match: {
-          contentId: body.contentId,
-          publishedDate: {
-            $gte: new Date(moment(body.dateGte).startOf('day').format()),
-            $lt: new Date(moment(body.dateLt).endOf('day').format()),
-          },
-        },
+        $match: matchQuery,
       },
       {
         $project: {
@@ -101,21 +117,30 @@ export const env = async (ctx) => {
   {
     "dateGte" : "2022-08-11",
     "dateLt" : "2022-08-14",
-    "dataKey" : "C5"    
+    "dataKey" : "C5",
+    "userIds" : []
   }
 */
 export const char = async (ctx) => {
   const body = ctx.request.body || {};
 
+  const matchQuery = {
+    publishedDate: {
+      $gte: new Date(moment(body.dateGte).startOf('day').format()),
+      $lt: new Date(moment(body.dateLt).endOf('day').format()),
+    },
+  };
+
+  if (body.userIds) {
+    matchQuery['userId'] = {
+      $in: body.userIds,
+    };
+  }
+
   try {
     const aggregate = await Content.aggregate([
       {
-        $match: {
-          publishedDate: {
-            $gte: new Date(moment(body.dateGte).startOf('day').format()),
-            $lt: new Date(moment(body.dateLt).endOf('day').format()),
-          },
-        },
+        $match: matchQuery,
       },
       {
         $addFields: {
@@ -155,22 +180,31 @@ export const char = async (ctx) => {
     "dateGte" : "2022-08-11",
     "dateLt" : "2022-08-14",
     "dataKey" : "C5",
-    "sex" : "남"
+    "sex" : "남",
+    "userIds" : []
   }
 */
 export const sex = async (ctx) => {
   const body = ctx.request.body || {};
 
+  const matchQuery = {
+    publishedDate: {
+      $gte: new Date(moment(body.dateGte).startOf('day').format()),
+      $lt: new Date(moment(body.dateLt).endOf('day').format()),
+    },
+    sex: body.sex,
+  };
+
+  if (body.userIds) {
+    matchQuery['userId'] = {
+      $in: body.userIds,
+    };
+  }
+
   try {
     const aggregate = await Content.aggregate([
       {
-        $match: {
-          publishedDate: {
-            $gte: new Date(moment(body.dateGte).startOf('day').format()),
-            $lt: new Date(moment(body.dateLt).endOf('day').format()),
-          },
-          sex: body.sex,
-        },
+        $match: matchQuery,
       },
       {
         $addFields: {
@@ -211,25 +245,34 @@ export const sex = async (ctx) => {
     "dateLt" : "2022-08-14",
     "dataKey" : "C5",
     "ageGte" : 7,
-    "ageLte" : 9
+    "ageLte" : 9,
+    "userIds" : []
   }
 */
 export const age = async (ctx) => {
   const body = ctx.request.body || {};
 
+  const matchQuery = {
+    publishedDate: {
+      $gte: new Date(moment(body.dateGte).startOf('day').format()),
+      $lt: new Date(moment(body.dateLt).endOf('day').format()),
+    },
+    age: {
+      $gte: body.ageGte,
+      $lte: body.ageLte,
+    },
+  };
+
+  if (body.userIds) {
+    matchQuery['userId'] = {
+      $in: body.userIds,
+    };
+  }
+
   try {
     const aggregate = await Content.aggregate([
       {
-        $match: {
-          publishedDate: {
-            $gte: new Date(moment(body.dateGte).startOf('day').format()),
-            $lt: new Date(moment(body.dateLt).endOf('day').format()),
-          },
-          age: {
-            $gte: body.ageGte,
-            $lte: body.ageLte,
-          },
-        },
+        $match: matchQuery,
       },
       {
         $addFields: {
@@ -269,22 +312,31 @@ export const age = async (ctx) => {
     "dateGte" : "2022-08-11",
     "dateLt" : "2022-08-14",
     "dataKey" : "C5",
-    "address" : "서울 강남구"
+    "address" : "서울 강남구",
+    "userIds" : []
   }
 */
 export const address = async (ctx) => {
   const body = ctx.request.body || {};
 
+  const matchQuery = {
+    publishedDate: {
+      $gte: new Date(moment(body.dateGte).startOf('day').format()),
+      $lt: new Date(moment(body.dateLt).endOf('day').format()),
+    },
+    address: body.address,
+  };
+
+  if (body.userIds) {
+    matchQuery['userId'] = {
+      $in: body.userIds,
+    };
+  }
+
   try {
     const aggregate = await Content.aggregate([
       {
-        $match: {
-          publishedDate: {
-            $gte: new Date(moment(body.dateGte).startOf('day').format()),
-            $lt: new Date(moment(body.dateLt).endOf('day').format()),
-          },
-          address: body.address,
-        },
+        $match: matchQuery,
       },
       {
         $addFields: {
@@ -324,22 +376,31 @@ export const address = async (ctx) => {
     "dateGte" : "2022-08-11",
     "dateLt" : "2022-08-14",
     "dataKey" : "C5",
-    "type" : "고등학교"
+    "type" : "고등학교",
+    "userIds" : []
   }
 */
 export const type = async (ctx) => {
   const body = ctx.request.body || {};
 
+  const matchQuery = {
+    publishedDate: {
+      $gte: new Date(moment(body.dateGte).startOf('day').format()),
+      $lt: new Date(moment(body.dateLt).endOf('day').format()),
+    },
+    type: body.type,
+  };
+
+  if (body.userIds) {
+    matchQuery['userId'] = {
+      $in: body.userIds,
+    };
+  }
+
   try {
     const aggregate = await Content.aggregate([
       {
-        $match: {
-          publishedDate: {
-            $gte: new Date(moment(body.dateGte).startOf('day').format()),
-            $lt: new Date(moment(body.dateLt).endOf('day').format()),
-          },
-          type: body.type,
-        },
+        $match: matchQuery,
       },
       {
         $addFields: {
@@ -377,21 +438,30 @@ export const type = async (ctx) => {
   POST /api/statistics/addressAll
   {
     "dateGte" : "2022-08-11",
-    "dateLt" : "2022-08-14",   
+    "dateLt" : "2022-08-14",
+    "userIds" : []
   }
 */
 export const addressAll = async (ctx) => {
   const body = ctx.request.body || {};
 
+  const matchQuery = {
+    publishedDate: {
+      $gte: new Date(moment(body.dateGte).startOf('day').format()),
+      $lt: new Date(moment(body.dateLt).endOf('day').format()),
+    },
+  };
+
+  if (body.userIds) {
+    matchQuery['userId'] = {
+      $in: body.userIds,
+    };
+  }
+
   try {
     const aggregate = await Content.aggregate([
       {
-        $match: {
-          publishedDate: {
-            $gte: new Date(moment(body.dateGte).startOf('day').format()),
-            $lt: new Date(moment(body.dateLt).endOf('day').format()),
-          }
-        },
+        $match: matchQuery,
       },
       {
         $addFields: {
@@ -417,4 +487,3 @@ export const addressAll = async (ctx) => {
     ctx.throw(500, error);
   }
 };
-
