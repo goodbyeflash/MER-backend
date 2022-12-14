@@ -40,7 +40,7 @@ export const count = async (ctx) => {
   POST /api/teacher/register
   {
       "id" : "kim",
-      "password" : "kim123",
+      "password" : "",
       "name" : "김교사",
       "hp" : "01011112222",
       "email" : "kim@gg.kr",
@@ -120,14 +120,13 @@ export const register = async (ctx) => {
     POST /api/teacher/login
     {
         "id" : "sangbin",
-        "password" : "mypass123"
+        "password" : ""
     }
 */
 export const login = async (ctx) => {
   const { id, password } = ctx.request.body;
   // id, password가 없으면 에러 처리
   if (!id || !password) {
-    
     ctx.status = 401; // Unteacherorized
     return;
   }
